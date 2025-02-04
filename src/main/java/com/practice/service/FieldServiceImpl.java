@@ -1,0 +1,48 @@
+package com.practice.service;
+
+import com.practice.dto.FieldDTO;
+import com.practice.entity.Field;
+import com.practice.repository.FieldRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class FieldServiceImpl implements FieldService {
+
+    @Autowired
+    private FieldRepository fieldRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    // Thêm ngành nghề
+    @Override
+    public FieldDTO createField(FieldDTO fieldDTO) {
+        Field field = modelMapper.map(fieldDTO, Field.class);
+        return modelMapper.map(fieldRepository.save(field), FieldDTO.class);
+    }
+
+    //Sửa ngành nghề
+    @Override
+    public FieldDTO updateField(Long id, FieldDTO fieldDTO) {
+        Field field = fieldRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Field not found with id: " + id));
+        field.setName(fieldDTO.getName());
+        field.setCode(fieldDTO.getCode());
+        return modelMapper.map(fieldRepository.save(field), FieldDTO.class);
+    }
+
+    // xoa nganh nghe
+    @Override
+    public FieldDTO deleteField(Long id) {
+
+        Field field = fieldRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Field not found with id: " + id));
+
+        fieldRepository.delete(field);
+        return modelMapper.map(field, FieldDTO.class);
+
+    }
+}
